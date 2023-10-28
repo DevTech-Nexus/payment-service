@@ -35,7 +35,7 @@ create database payment;
 
 create table payment_record(
 id INT not null auto_increment,
-user_id INT not null,
+user_id VARCHAR(50) not null,
 order_id INT not null,
 amount DECIMAL not null,
 datetime TIMESTAMP not null,

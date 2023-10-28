@@ -18,8 +18,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class PaymentDto {
-    private int uid;
     private int oid;
+    private String user;
     private double price;
     private String currency;
     private String method;

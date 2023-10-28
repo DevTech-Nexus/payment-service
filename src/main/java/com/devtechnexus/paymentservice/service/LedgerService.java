@@ -6,7 +6,6 @@ import com.devtechnexus.paymentservice.repository.PaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
@@ -19,16 +18,16 @@ public class LedgerService {
     /**
      * run when payment is CREATED
      */
-    public void createLedgerEntry(PaymentDto payment) {
+    public void createLedgerEntry(String id, PaymentDto payment) {
 
 
         paymentRepository.save(new PaymentRecord(
-                payment.getUid(),
+                payment.getUser(),
                 payment.getOid(),
                 payment.getPrice(),
                 Timestamp.valueOf(LocalDateTime.now()),
                 "PENDING",
-                null,
+                id,
                 payment.getCurrency(),
                 payment.getDescription()));
     }
@@ -36,16 +35,16 @@ public class LedgerService {
     /**
      * run when payment is COMPLETED or CANCELLED
      */
-    public void successLedgerEntry(int uid, int oid, String paymentid) {
-        PaymentRecord paymentRecord = paymentRepository.findByUserIdAndOrderId(uid, oid);
+    public void successLedgerEntry(String uid, int oid, String paymentid) {
+        PaymentRecord paymentRecord = paymentRepository.findByUserAndOrderId(uid, oid);
         paymentRecord.setStatus("COMPLETED");
         paymentRecord.setPayment_id(paymentid);
         paymentRepository.save(paymentRecord);
 
     }
 
-    public void cancelLedgerEntry(int uid, int oid) {
-        PaymentRecord paymentRecord = paymentRepository.findByUserIdAndOrderId(uid, oid);
+    public void cancelLedgerEntry(String uid, int oid) {
+        PaymentRecord paymentRecord = paymentRepository.findByUserAndOrderId(uid, oid);
         paymentRecord.setStatus("CANCELLED");
         paymentRepository.save(paymentRecord);
     }

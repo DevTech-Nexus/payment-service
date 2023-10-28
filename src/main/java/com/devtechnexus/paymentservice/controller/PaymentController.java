@@ -6,11 +6,16 @@ import com.devtechnexus.paymentservice.service.PaymentService;
 import com.paypal.api.payments.Links;
 import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path = "/payments")
+@CrossOrigin
 public class PaymentController {
 
     @Autowired
@@ -19,12 +24,11 @@ public class PaymentController {
     @Autowired
     private LedgerService ledgerService;
 
-    private int userid, orderid;
 
 
-    //local : http://localhost:8084/payments/
-    //deployed: https://expertmobile-paymentservice.azurewebsites.net/payments/
-    private static final String HOST = "https://expertmobile-paymentservice.azurewebsites.net/payments/";
+    private static final String LOCAL = "http://localhost:8084/payments/";
+    private static final String CLOUD =  "https://expertmobile-paymentservice.azurewebsites.net/payments/";
+    private static final String HOST = LOCAL;
     private static final String SUCCESS_URL = "success";
     private static final String CANCEL_URL = "cancel";
 
@@ -35,8 +39,9 @@ public class PaymentController {
      */
     @PostMapping(path = "/process")
     public String createPayment(@RequestBody PaymentDto payment) {
-        try {
 
+
+        try {
             //access paypal api to create a payment
             Payment paymentResponse = paymentService.createPayment(payment.getPrice(),
                     payment.getCurrency(),
@@ -47,12 +52,9 @@ public class PaymentController {
                     HOST + SUCCESS_URL
             );
 
-            userid = payment.getUid();
-            orderid = payment.getOid();
-
+            System.out.println(paymentResponse.getId());
             //create ledger entry
-            ledgerService.createLedgerEntry(payment);
-
+            ledgerService.createLedgerEntry(paymentResponse.getId(), payment);
 
 
             for (Links link : paymentResponse.getLinks()) {
@@ -60,13 +62,13 @@ public class PaymentController {
                     //sends user to PayPal login page
                     return
                             //"redirect:" +
-                            link.getHref();
+                            link.getHref() + "&user="  + payment.getUser() + "&oid=" + payment.getOid();
                 }
             }
         } catch (PayPalRESTException e) {
             e.printStackTrace();
         }
-        return "redirect:/";
+        return "http://localhost:5000/cart";
     }
 
     /**
@@ -81,11 +83,16 @@ public class PaymentController {
      */
     @GetMapping(SUCCESS_URL)
     public String success(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerID) {
+
         try{
             Payment payment = paymentService.executePayment(paymentId, payerID);
+
             if(payment.getState().equals("approved")){
                 //update ledger entry
-                ledgerService.successLedgerEntry(userid, orderid, paymentId);
+                ledgerService.successLedgerEntry(paymentId);
+
+                //contact delivery service to update order status to PAID
+                //TODO: contact delivery service
                 return "success";
             }
         }
@@ -99,7 +106,7 @@ public class PaymentController {
 
     @GetMapping(CANCEL_URL)
     public String cancel(){
-        ledgerService.cancelLedgerEntry(userid, orderid);
+        ledgerService.cancelLedgerEntry(,);
         return "cancel";
     }
 

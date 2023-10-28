@@ -27,8 +27,8 @@ public class PaymentRecord {
     public PaymentRecord() {
     }
 
-    public PaymentRecord(int uid, int oid, double amount, Timestamp datetime, String status, String payment_id, String currency, String description) {
-        this.userId = uid;
+    public PaymentRecord(String uid, int oid, double amount, Timestamp datetime, String status, String payment_id, String currency, String description) {
+        this.user = uid;
         this.orderId = oid;
         this.amount = amount;
         this.datetime = datetime;
@@ -43,7 +43,7 @@ public class PaymentRecord {
     private int id;
 
     @Column(name="user_id")
-    private int userId;
+    private String user;
 
     @Column(name="order_id")
     private int orderId;
