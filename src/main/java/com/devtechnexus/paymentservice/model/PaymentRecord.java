@@ -1,9 +1,7 @@
 package com.devtechnexus.paymentservice.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
 import java.sql.Timestamp;
 import java.time.ZoneId;
@@ -33,7 +31,7 @@ public class PaymentRecord {
         this.amount = amount;
         this.datetime = datetime;
         this.status = status;
-        this.payment_id = payment_id;
+        this.paymentId = payment_id;
         this.currency = currency;
         this.description = description;
     }
@@ -59,7 +57,7 @@ public class PaymentRecord {
     private String status;
 
     @Column(name="payment_id")
-    private String payment_id;
+    private String paymentId;
 
     @Column(name="currency")
     private String currency;

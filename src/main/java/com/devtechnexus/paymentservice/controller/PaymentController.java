@@ -62,7 +62,7 @@ public class PaymentController {
                     //sends user to PayPal login page
                     return
                             //"redirect:" +
-                            link.getHref() + "&user="  + payment.getUser() + "&oid=" + payment.getOid();
+                            link.getHref();
                 }
             }
         } catch (PayPalRESTException e) {
@@ -83,7 +83,7 @@ public class PaymentController {
      */
     @GetMapping(SUCCESS_URL)
     public String success(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerID) {
-
+        System.out.println(paymentId);
         try{
             Payment payment = paymentService.executePayment(paymentId, payerID);
 
@@ -106,7 +106,6 @@ public class PaymentController {
 
     @GetMapping(CANCEL_URL)
     public String cancel(){
-        ledgerService.cancelLedgerEntry(,);
         return "cancel";
     }
 

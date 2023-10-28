@@ -9,5 +9,6 @@ public interface PaymentRepository extends JpaRepository<PaymentRecord, Integer>
 
     public PaymentRecord findByUserAndOrderId(String uid, int oid);
 
+    public PaymentRecord findByPaymentId(String payment_id);
 
 }
