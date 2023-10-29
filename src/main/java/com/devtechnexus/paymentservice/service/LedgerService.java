@@ -33,18 +33,19 @@ public class LedgerService {
     }
 
     /**
-     * run when payment is COMPLETED or CANCELLED
+     * run when payment is PAID
+     * @returns int id of the order
      */
-    public void successLedgerEntry(String paymentid) {
-        PaymentRecord paymentRecord = paymentRepository.findByPaymentId(paymentid);
+    public int successLedgerEntry(String paymentId) {
+        PaymentRecord paymentRecord = paymentRepository.findByPaymentId(paymentId);
         paymentRecord.setStatus("COMPLETED");
-        paymentRecord.setPaymentId(paymentid);
+        paymentRecord.setPaymentId(paymentId);
         paymentRepository.save(paymentRecord);
-
+        return paymentRecord.getOrderId();
     }
 
-    public void cancelLedgerEntry(String paymentid) {
-        PaymentRecord paymentRecord = paymentRepository.findByPaymentId(paymentid);
+    public void cancelLedgerEntry(String paymentId) {
+        PaymentRecord paymentRecord = paymentRepository.findByPaymentId(paymentId);
         paymentRecord.setStatus("CANCELLED");
         paymentRepository.save(paymentRecord);
     }
