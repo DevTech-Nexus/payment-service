@@ -98,25 +98,11 @@ public class PaymentController {
                 //update ledger entry
                 int orderId = ledgerService.successLedgerEntry(paymentId);
 
-                //contact delivery service to update order status to PAID
-                HttpRequest request = HttpRequest.newBuilder().
-                        uri(new URI("http://localhost:8083/deliveries/" + orderId))
-                        .header("Content-Type", "application/json")
-                        .PUT(HttpRequest.BodyPublishers.ofString(""))
-                        .build();
-
-                HttpClient client = HttpClient.newHttpClient();
-                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                System.out.println(response.statusCode());
-                System.out.println(response.body());
-
-                return "success";
+                return "redirect:http://localhost:3000/shop/";
 
             }
         } catch (PayPalRESTException e) {
             e.printStackTrace();
-        } catch (URISyntaxException | IOException | InterruptedException e) {
-            throw new RuntimeException(e);
         }
         return "error";
     }
